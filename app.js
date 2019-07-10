@@ -6,17 +6,10 @@ const ExpressError = require('./expressError')
 
 app.get('/mean', function (req, res, next) {
   try {
-    if (req.query["nums"] === undefined || req.query["nums"].length === 0) {
-      throw new ExpressError('Bad Request: Please enter some numbers', 400)
-    }
+    inputErrors(req)
     let inputArray = req.query["nums"].split(",");
     let nums = [];
-    for (let num of inputArray) {
-      nums.push(parseInt(num));
-      if (!(parseInt(num))) {
-        throw new ExpressError(`Bad Request: ${num} is not a number`, 400)
-      }
-    }
+    inputToInts(inputArray, nums)
 
     let sum = 0;
 
@@ -39,18 +32,12 @@ app.get('/mean', function (req, res, next) {
 
 app.get('/median', function (req, res, next) {
   try{
-    if (req.query["nums"] === undefined || req.query["nums"].length === 0) {
-      throw new ExpressError('Bad Request: Please enter some numbers', 400)
-    }
+    inputErrors(req)
     let inputArray = req.query["nums"].split(",");
     let nums = [];
     let median;
-    for (let num of inputArray) {
-      nums.push(parseInt(num));
-      if (!(parseInt(num))) {
-        throw new ExpressError(`Bad Request: ${num} is not a number`, 400)
-      }
-    }
+    inputToInts(inputArray, nums)
+
     nums.sort(function (a, b) { return a - b });
     console.log(nums);
     if (nums.length % 2) {
@@ -78,19 +65,12 @@ app.get('/median', function (req, res, next) {
 
 app.get('/mode', function (req, res, next) {
   try{
-    if (req.query["nums"] === undefined || req.query["nums"].length === 0) {
-      throw new ExpressError('Bad Request: Please enter some numbers', 400)
-    }
+    inputErrors(req)
     let inputArray = req.query["nums"].split(",");
     let nums = [];
     let counter = {};
+    inputToInts(inputArray, nums)
 
-    for (let num of inputArray) {
-      nums.push(parseInt(num));
-      if (!(parseInt(num))) {
-        throw new ExpressError(`Bad Request: ${num} is not a number`, 400)
-      }
-    }
     //create frequency counter
     for (let num of nums) {
       counter[num] = counter[num] + 1 || 1;
@@ -139,3 +119,24 @@ app.use(function (err, req, res, next) {
 app.listen(3000, function () {
   console.log('App is on port 3000');
 })
+
+
+
+
+// ***************** HELPER FUNCTIONS *****************
+
+function inputErrors(req){
+  if (req.query["nums"] === undefined || req.query["nums"].length === 0) {
+    throw new ExpressError('Bad Request: Please enter some numbers', 400)
+  }
+}
+
+// takes in array of strings, turns them into int, push them into nums
+function inputToInts(inputArray, nums){
+  for (let num of inputArray) {
+    nums.push(parseInt(num));
+    if (!(parseInt(num))) {
+      throw new ExpressError(`Bad Request: ${num} is not a number`, 400)
+    }
+  }
+}
